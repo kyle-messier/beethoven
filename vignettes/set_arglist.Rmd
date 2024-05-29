@@ -1,0 +1,37 @@
+---
+title: "Argument list file creation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Argument list file creation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+date: "2024-05-29"
+author: "Insang Song"
+---
+
+
+# Argument list
+- The idea of an argument list is to attain flexibility in the analysis by changing the parameters in the argument list file without changing the code, thereby using the argument list **file** as a file target in `targets` framework.
+- We use `qs` format file, which requires `qs` package, to maintain multiple parameter lists for repeated use.
+- This list should be created **before** running the pipeline. The pipeline will read the argument list to map file paths and parameters specific to each target.
+- Note that the paths are relative, which means the users should set the working directory to the root directory of the project before running the pipeline. It is also assumed that the raw datasets should be stored in the `input` directory.
+
+
+# Components
+```
+arglist_common
+arglist_paths
+arglist_proccalc
+```
+
+1. `arglist_common`: common parameters for the analysis. Period, site identifier, time identifier, extent (for this package, we use the mainland United States extent in WGS84 coordinates).
+2. `arglist_paths`: large file paths for MODIS/VIIRS HDF files.
+3. `arglist_proccalc`: parameters for processing and calculation. This includes the number of cores to use, the number of years to process, and the number of years to calculate, and others. -- **this list object will be saved as a qs file.**
+
+
+# Dependencies
+- Utility functions in `inst/targets/pipeline_base_functions.R` are used to create the argument list. The users should consult this file and the `inst/targets/arglist.R` file to navigate the functions that are used.
+
+
+# Operation
+- The `arglist_proccalc` list is a nested list, each of which contains a list of parameters for each target. It will be _injected_ into an actual calculation function to process and calculate features from the raw data using utility functions specifically designed for this package as well as `amadeus` package. Lower level functions are mostly from `sf`, `terra`, `data.table`, `dplyr`, and `exactextractr` packages.

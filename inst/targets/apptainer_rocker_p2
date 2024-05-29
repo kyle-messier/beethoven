@@ -1,0 +1,18 @@
+Bootstrap: localimage
+From: r-image-base-05292024.sif
+
+%post
+#    Rscript -e "pak::pak('rspatial/terra')"
+   Rscript -e "pak::pak('NIEHS/chopin')"
+   Rscript -e "remotes::install_github('NIEHS/amadeus@isong-hucvars', force = TRUE)"
+#    mkdir /pipeline
+
+%environment
+   export LC_ALL=C
+
+%files
+
+%runscript
+
+%labels
+  "Dev packages installation on a static image by Insang Song"

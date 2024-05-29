@@ -469,6 +469,7 @@ calculate <-
       #try(
         future.apply::future_mapply(
           function(domain_each, year_each) {
+            sf::sf_use_s2(FALSE)
             # we assume that ... have no "year" and "from" arguments
             args_process <- c(arg = domain_each, list(...))
             names(args_process)[1] <- domain_name
