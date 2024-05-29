@@ -1,7 +1,13 @@
 library(targets)
 library(tarchetypes)
-library(future)
-library(future.batchtools)
+library(crew)
+library(crew.cluster)
+
+# here we assume that the project root is bound to
+# the image's internal directory /pipeline
+# this is attained by --bind /ddn/gs1/home/songi2/beethoven:/pipeline
+# in the apptainer run command
+
 
 tar_source("inst/targets/pipeline_base_functions.R")
 tar_source("inst/targets/targets_initialize.R")
@@ -15,31 +21,31 @@ tar_source("inst/targets/targets_arglist.R")
 # bypass option
 Sys.setenv("BTV_DOWNLOAD_PASS" = "TRUE")
 
-# bind custom built GDAL
-.libPaths(
-  c(
-    "/ddn/gs1/biotools/R/lib64/R/custompkg",
-    .libPaths()
-  )
-)
 
-plan(
-  list(
-    tweak(
-      future.batchtools::batchtools_slurm,
-      template = "inst/targets/template_slurm.tmpl",
-      resources =
-        list(
-          memory = 8,
-          log.file = "slurm_run.log",
-          ncpus = 1, partition = "geo", ntasks = 1,
-          email = arglist_common$user_email,
-          error.file = "slurm_error.log"
-        )
-    ),
-    multicore
+# plan(
+#   list(
+#     tweak(
+#       future.batchtools::batchtools_slurm,
+#       template = "inst/targets/template_slurm.tmpl",
+#       resources =
+#         list(
+#           memory = 8,
+#           log.file = "slurm_run.log",
+#           ncpus = 1, partition = "geo", ntasks = 1,
+#           email = arglist_common$user_email,
+#           error.file = "slurm_error.log"
+#         )
+#     ),
+#     multicore
+#   )
+# )
+
+crew_default <-
+  crew::crew_controller_local(
+    name = "controller_default",
+    workers = 20L,
+    garbage_collection = TRUE
   )
-)
 
 # # invalidate any nodes older than 180 days: force running the pipeline
 # tar_invalidate(any_of(tar_older(Sys.time() - as.difftime(180, units = "days"))))
@@ -56,45 +62,19 @@ tar_option_set(
   packages =
     c("amadeus", "chopin", "targets", "tarchetypes",
       "data.table", "sf", "terra", "exactextractr",
-      #"crew", "crew.cluster", 
+      "crew", "crew.cluster", 
       "tigris", "dplyr",
       "future.batchtools", "qs", "collapse",
       "future", "future.apply", "future.callr", "callr",
-      #"sftime",
       "stars", "rlang", "foreach", "parallelly"),
-  library = c("/ddn/gs1/biotools/R/lib64/R/custompkg", "/ddn/gs1/home/songi2/r-libs"),
   repository = "local",
   error = "stop",
-  # controller = 
-  #   crew.cluster::crew_controller_slurm(
-  #     slurm_log_output = "output/slurm_pipeline_log.out",
-  #     slurm_log_error = "output/slurm_pipeline_error.err",
-  #     script_directory = "output/slurm_scripts",
-  #     workers = 50L,
-  #     tasks_max = 50L,
-  #     slurm_memory_gigabytes_per_cpu = 12,
-  #     slurm_cpus_per_task = 8L,
-  #     slurm_time_minutes = NULL,
-  #     slurm_partition = "geo"
-  #   ),
-  # resources = tar_resources(
-  #   future = tar_resources_future(
-  #     plan =
-  #       tweak(
-  #         future.batchtools::batchtools_slurm,
-  #         template = "inst/targets/template_slurm.tmpl",
-  #         resources =
-  #           list(
-  #             memory = 10,
-  #             log.file = "slurm_run.log",
-  #             ncpus = 1, partition = "geo", ntasks = 1,
-  #             email = arglist_common$user_email,
-  #             error.file = "slurm_error.log"
-  #           )
-  #       ),
-  #       multicore
-  #   )
-  # ),
+  controller = crew_default,
+  resources = tar_resources(
+    crew = tar_resources_crew(
+      controller = "controller_default"
+    )
+  ),
   memory = "transient",
   format = "qs",
   storage = "worker",

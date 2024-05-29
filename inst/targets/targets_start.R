@@ -8,9 +8,7 @@ library(targets)
 #   to = "_targets.R"
 # )
 
-tar_make_future(
-  workers = 24 
-)
+tar_make()
 
 # Even if configuration (aka punchcard) date range has changed,
 # the spatiotemporal targets will not be reprocessed as

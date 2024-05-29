@@ -1,0 +1,26 @@
+BootStrap: docker
+From: rocker/geospatial:latest
+
+%post
+   apt-get -y update
+   apt-get -y install gfortran
+   Rscript -e "install.packages(c('pacman', 'future', 'future.apply'))"
+   Rscript -e "install.packages('exactextractr')"
+   Rscript -e "install.packages(c('tidytable', 'furrr', 'purrr', 'tidyr', 'dtplyr', 'data.table', 'collapse'))"
+   Rscript -e "install.packages(c('nngeo', 'remotes', 'pak'))"
+   Rscript -e 'install.packages(c("targets", "tarchetypes", "data.table", "sf", "terra", "exactextractr", "crew", "crew.cluster", "tigris", "dplyr", "future.batchtools", "qs", "collapse", "future", "future.apply", "future.callr", "callr", "sftime", "stars", "rlang", "foreach", "parallelly"))'
+   Rscript -e "pak::pak('qs')"
+   Rscript -e "pak::pak('rspatial/terra')"
+   Rscript -e "pak::pak('NIEHS/chopin')"
+   Rscript -e "pak::pak('NIEHS/amadeus@isong-hucvars')"
+   mkdir /pipeline
+
+%environment
+   export LC_ALL=C
+
+%files
+
+%runscript
+
+%labels
+  Insang Song

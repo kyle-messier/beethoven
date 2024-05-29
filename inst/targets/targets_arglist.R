@@ -55,6 +55,7 @@ library(qs)
 #         "narr", c(0),    "input/narr"
 #     )
 source("inst/targets/pipeline_base_functions.R")
+CONTAINER_PATH <- "/pipeline"
 
 ## This file is to define required parameters that are reused
 ## throughout the pipeline.
@@ -78,15 +79,21 @@ arglist_common <-
 ## by using load_modis_files macro, users can predefine the scope of
 ## file lists, which will result in reducing the number of function calls
 ## in the main pipeline run.
+
+arglist_paths <-
+  list(
+    mod11 = load_modis_files("input/modis/raw/61/MOD11A1", date = arglist_common$char_period),
+    mod06 = load_modis_files("input/modis/raw/61/MOD06_L2", date = arglist_common$char_period),
+    mod09 = load_modis_files("input/modis/raw/61/MOD09GA", date = arglist_common$char_period),
+    mcd19 = load_modis_files("input/modis/raw/61/MCD19A2", date = arglist_common$char_period),
+    mod13 = load_modis_files("input/modis/raw/61/MOD13A2", date = arglist_common$char_period),
+    viirs = load_modis_files("input/modis/raw/5000/VNP46A2", "h5$", date = arglist_common$char_period)
+  )
+
+# here we change the absolute path in local to the container path
 # arglist_paths <-
-#   list(
-#     mod11 = load_modis_files("input/modis/raw/61/MOD11A1", date = arglist_common$char_period),
-#     mod06 = load_modis_files("input/modis/raw/61/MOD06_L2", date = arglist_common$char_period),
-#     mod09 = load_modis_files("input/modis/raw/61/MOD09GA", date = arglist_common$char_period),
-#     mcd19 = load_modis_files("input/modis/raw/61/MCD19A2", date = arglist_common$char_period),
-#     mod13 = load_modis_files("input/modis/raw/61/MOD13A2", date = arglist_common$char_period),
-#     viirs = load_modis_files("input/modis/raw/5000/VNP46A2", "h5$", date = arglist_common$char_period)
-#   )
+#   lapply(arglist_paths, \(x) sub(getwd(), CONTAINER_PATH, x))
+
 
 # arglist_proccalc: calculation parameters by raw dataset
 # This named and nested list object includes raw data names

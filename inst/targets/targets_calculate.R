@@ -96,9 +96,9 @@ target_calculate_fit <-
           locs = sf_feat_proc_aqs_sites,
           injection = loadargs(file_prep_calc_args, chr_iter_calc_nasa)),
       pattern = cross(file_prep_calc_args, chr_iter_calc_nasa),
-      resources = set_slurm_resource(
-            ntasks = 1, ncpus = 20, memory = 8
-          ),
+      # resources = set_slurm_resource(
+      #       ntasks = 1, ncpus = 20, memory = 8
+      #     ),
       iteration = "list",
       description = "MODIS/VIIRS feature list"
     )
@@ -111,10 +111,9 @@ target_calculate_fit <-
       ),
       pattern = cross(file_prep_calc_args, chr_iter_calc_geoscf),
       iteration = "list",
-      resources = set_slurm_resource(
-            ntasks = 1, ncpus = 10, memory = 4
-          ),
-
+      # resources = set_slurm_resource(
+      #       ntasks = 1, ncpus = 10, memory = 4
+      #     ),
       description = "GEOS-CF feature list"
     )
     ,
@@ -128,9 +127,9 @@ target_calculate_fit <-
       ),
       iteration = "list",
       pattern = cross(file_prep_calc_args, chr_iter_calc_gmted_vars),
-      resources = set_slurm_resource(
-            ntasks = 1, ncpus = 4, memory = 8
-          ),
+      # resources = set_slurm_resource(
+      #       ntasks = 1, ncpus = 4, memory = 8
+      #     ),
       description = "GMTED feature list"
     )
     ,
@@ -145,10 +144,10 @@ target_calculate_fit <-
         )
       ,
       pattern = map(file_prep_calc_args),
-      iteration = "list",
-      resources = set_slurm_resource(
-            ntasks = 1, ncpus = 12, memory = 30 
-          )
+      iteration = "list"
+      # resources = set_slurm_resource(
+      #       ntasks = 1, ncpus = 12, memory = 30 
+      #     )
     )
     ,
     # targets::tar_target(
@@ -251,18 +250,18 @@ target_calculate_fit <-
         input_new = dt_feat_calc_design,
         nthreads = 8L
       ),
-      description = "Cumulative feature calculation",
-      resources = set_slurm_resource(
-            ntasks = 1, ncpus = 8, memory = 100
-          )
+      description = "Cumulative feature calculation"
+      # resources = set_slurm_resource(
+      #       ntasks = 1, ncpus = 8, memory = 100
+      #     )
     ),
     tar_target(
       dt_feat_calc_imputed,
       command = impute_all(dt_feat_calc_cumulative),
-      description = "Imputed features + lags",
-      resources = set_slurm_resource(
-            ntasks = 1, ncpus = 8, memory = 100
-          )
+      description = "Imputed features + lags"
+      # resources = set_slurm_resource(
+      #       ntasks = 1, ncpus = 8, memory = 100
+      #     )
     )
   # TODO: compute lagged variables
   )

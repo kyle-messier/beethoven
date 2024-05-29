@@ -18,3 +18,4 @@ Rinput
 tools
 .github
 tests
+**/*.sif
